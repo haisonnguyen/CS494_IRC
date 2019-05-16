@@ -1,0 +1,10 @@
+{
+    "name": "CS494-IRC",
+    "version": "0.0.1",
+    "description": "IRC application for CS494 Internetworking Protocols",
+    "dependencies": {
+        "express": "^4.16.4",
+        "path": "^0.12.7",
+        "socket.io": "^2.2.0"
+    }
+}
