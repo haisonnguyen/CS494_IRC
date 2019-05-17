@@ -16,10 +16,14 @@ $(start = () => {
     $('#messages').append($('<li>').text(msg));
   })
 
-  socket.on('user join', (new_user) => {
-    $('#messages').append($('<li>').text(new_user.id.toString() + " has joined"));
+  // When a user enters, we announce their arrival
+  socket.on('user join', (user) => {
+    $('#messages').append($('<li>').text(user.toString() + " has joined!"));
   });
+
+
+  // When a user leaves, we announce their departure
   socket.on('user left', (user) => {
-    $('#messages').append($('<li>').text(user.id.toString()+ " has left"));
+    $('#messages').append($('<li>').text(user.toString()+ " has left!"));
   });
 });

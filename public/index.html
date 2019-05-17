@@ -3,6 +3,8 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
     <title>Socket.IO chat</title>
 </head>
 
@@ -10,9 +12,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="socket.js"></script>
-    <ul id="messages"></ul>
+    <div class ="tab">
+        <button class="tablinks">Main Chat</button>
+        <button id="create_room" class="tablinks">Create a Room</button>
+
+    </div>
+    <ul class="messages" id="main_chat"></ul>
     <form action="">
-        <input id="m" autocomplete="off" /><button>Send</button>
+        <input id="m" placeholder="Start typing" autocomplete="off"><button>Send</button>
     </form>
 </body>
 

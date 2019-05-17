@@ -1,7 +1,6 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
@@ -30,16 +29,36 @@ form button {
   padding: 10px;
 }
 
-#messages {
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+.tablinks {
+  margin: 0;
+  padding:0;
+}
+.messages {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-#messages li {
+.messages li {
   padding: 5px 10px;
 }
 
-#messages li:nth-child(odd) {
+.messages li:nth-child(odd) {
   background: #eee;
 }
