@@ -3,36 +3,39 @@ const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
-
-
 const port = process.env.PORT || 8080;
 
-const INDEX = "./index.html"
-
-var numUsers = 0;
+var chatRooms = {};
 var onlineUsers = {};
+chatRooms["main"] = "main";
 
-/******************************************************** App Routing ********************************************************/
-// Serving static files under 'public'
 app.use(express.static(__dirname + "/public"));
 
-// ******************************************************** Socket handling ********************************************************/
-// Socket Event handling for chat messaging
 io.on("connection", (socket) => {
-  // Upon a connection, announce arrival
   io.emit("user join", socket.id);
+  onlineUsers[socket.id] = socket;
+  socket.room = "main";
+  
+  socket.on("chat message", msg => socket.in(socket.room).emit("chat message", msg));
 
-  // Sending messages
-  socket.on("chat message", msg => io.emit("chat message", msg));
+  socket.on("create chat room", (room_name) => {
+    chatRooms[room_name] = room_name;
+    socket.join(room_name);
+    socket.emit("chat room created", room_name);
+  });
 
-  // Upon disconnect, announce departure
+  socket.on('switch rooms', (room) => {
+    socket.leave(socket.room);
+    socket.room = room;
+  });
+
   socket.on("disconnect", () => {
+    --numUsers;
     io.emit("user left", socket.id);
   });
 });
 
-/******************************************************** Server ********************************************************/
-// Listen on port
+
 server.listen(port, () => {
   console.log("Listening on port " + port);
 });

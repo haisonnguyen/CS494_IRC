@@ -1,29 +1,51 @@
 // Start
 $(start = () => {
-  // Establish socket connection client side
-  var socket= io();
-
-  // When click "send", emit chat message event and update value
-  $("form").submit(function(e) {
-    e.preventDefault(); // prevents page reloading
+  var socket = io('http://localhost:8080');
+  var chatRooms = {};
+  $("form").submit(function (e) {
+    e.preventDefault();
     socket.emit("chat message", $("#m").val());
     $("#m").val("");
     return false;
   });
 
-  //On a chat message event, append to the list
+  $("#create-room").on('click', () => {
+    $('#create-chat-room-name').show();
+  });
+
+  $(".tab-links").on('click', () => {
+    var current = $(this).val();
+    switchRooms(current);
+  });
+
+  $('#enter-chat-room-name').on('click', () => {
+    var room_name = $('#chat-room-name').val();
+    $('#chat-room-name').val("");
+    socket.emit('create chat room', room_name);
+    $('#create-chat-room-name').hide();
+    $($('<button class="tab-links">').text(val)).insertBefore($('div button:last-child'));
+  });
+
   socket.on('chat message', (msg) => {
-    $('#messages').append($('<li>').text(msg));
+    $('#main_chat').append($('<li>').text(msg));
   })
 
-  // When a user enters, we announce their arrival
+  socket.on('chat room created', (chat_room_name) => {
+    var new_chat_room = io(chat_room_name);
+    chatRooms[chat_room_name] = new_chat_room;
+  });
+  
   socket.on('user join', (user) => {
-    $('#messages').append($('<li>').text(user.toString() + " has joined!"));
+    $('#main_chat').append($('<li>').text(user.toString() + " has joined!"));
   });
 
 
-  // When a user leaves, we announce their departure
   socket.on('user left', (user) => {
-    $('#messages').append($('<li>').text(user.toString()+ " has left!"));
+    $('#main_chat').append($('<li>').text(user.toString() + " has left!"));
   });
 });
+
+
+function switchRooms(room) {
+  socket.emit('switch rooms', room);
+}
