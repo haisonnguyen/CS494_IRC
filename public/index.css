@@ -1,35 +1,53 @@
 .nopadding {
-    padding: 0 !important;
-    margin: 0 !important;
- }
-.container-fluid{
-    height: 100vh;
-    overflow:hidden;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.container-fluid {
+  height: 100vh;
+  overflow: hidden;
 }
 
 .chat-box {
-    height:100%;
-    overflow:hidden;
+  height: 100%;
+  overflow: hidden;
 }
 .side-nav {
-    height:100%;
-    background: whitesmoke;
+  height: 100%;
+  background: whitesmoke;
 }
 
-#enter-message {
-    left:0;
-    position:absolute;
-    bottom:0;
-    width:100%;
-    overflow:visible;
+#chat-message-form {
+  left: 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  overflow: visible;
 }
 
-#enter-message input {
-    display:inline-block;
-    width:90%;
+#chat-message-form input {
+  display: inline-block;
+  width: 87%;
 }
 
-#enter-message button {
-    display:inline-block;
-    width:10%;
+#chat-message-form button {
+  display: inline-block;
+  width: 13%;
 }
+
+.list-group li button {
+  height: 10vh;
+  width: 100%;
+}
+
+#messages {
+  font-size: 150%;
+  height: 100%;
+  margin: 0;
+  overflow-y: scroll;
+  padding: 10px 20px 10px 20px;
+}
+
+#chatArea {
+    height: 100%;
+    padding-bottom: 60px;
+  }
