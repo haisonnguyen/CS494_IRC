@@ -1,91 +1,35 @@
-* {
-  margin: 0;
-  padding: 0;
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+ }
+.container-fluid{
+    height: 100vh;
+    overflow:hidden;
 }
 
-body {
-  font: 13px Helvetica, Arial;
+.chat-box {
+    height:100%;
+    overflow:hidden;
+}
+.side-nav {
+    height:100%;
+    background: whitesmoke;
 }
 
-form {
-  background: #000;
-  padding: 3px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+#enter-message {
+    left:0;
+    position:absolute;
+    bottom:0;
+    width:100%;
+    overflow:visible;
 }
 
-form input {
-  border: 0;
-  padding: 10px;
-  width: 90%;
-  margin-right: 0.5%;
+#enter-message input {
+    display:inline-block;
+    width:90%;
 }
 
-form button {
-  width: 9%;
-  background: rgb(130, 224, 255);
-  border: none;
-  padding: 10px;
-}
-
-.tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-}
-
-/* Style the buttons inside the tab */
-.tab button {
-  background-color: inherit;
-  float: left;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-  font-size: 17px;
-}
-.tab-links {
-  margin: 0;
-  padding:0;
-}
-.messages {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  height:300px;
-  overflow-y: scroll;
-}
-
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  padding-top: 60px;
-}
-
-/* Modal Content/Box */
-.modal-content {
-  background-color: #fefefe;
-  border: 1px solid #888;
-  width: 50%; /* Could be more or less, depending on screen size */
-  position: fixed;
-  margin: 5% auto 23% auto;
-  left: 25%;
-}
-
-.messages li {
-  padding: 5px 10px;
-}
-
-.messages li:nth-child(odd) {
-  background: #eee;
+#enter-message button {
+    display:inline-block;
+    width:10%;
 }

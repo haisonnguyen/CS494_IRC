@@ -3,7 +3,7 @@ var current = "main";
 $(document).ready(() => {
   // Start
   var socket = io();
-  $("form").submit(function(e) {
+  $("form").submit(function (e) {
     e.preventDefault();
     var message = $("#m").val();
     socket.emit("chat message", { room: current, msg: message });
@@ -19,7 +19,7 @@ $(document).ready(() => {
     var id = e.target.id;
     if (id != "create-room") {
       current = id;
-      socket.emit("create room", current);
+      socket.emit("join room", current);
     }
   });
 
@@ -33,13 +33,13 @@ $(document).ready(() => {
   });
 
   socket.on("chat message", data => {
-    console.log("triggered");
     console.log(current, data.room, data.msg);
     $("#chats #" + data.room).append($("<li>").text(data.msg));
   });
 
   socket.on("user join", user => {
     $("#chats #main").append($("<li>").text(user.toString() + " has joined!"));
+    $("#online-users").append($("<li>").text(user.toString()));
   });
 
   socket.on("user left", user => {
@@ -61,5 +61,6 @@ $(document).ready(() => {
         .insertBefore($("div button:last-child"))
     );
     $("#chats").append($('<ul class="messages" id="' + room_name + '"></ul>'));
-  }
+  };
 });
+
