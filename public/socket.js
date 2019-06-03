@@ -21,22 +21,24 @@ $(document).ready(() => {
     var message = $("#chat-message-input").val();
     $("#chat-message-input").val("");
     socket.emit("chat message", { room: current, msg: message });
-    console.log(message);
     return false;
   });
 
   socket.on("chat message", data => {
-    console.log(current, data.room, data.msg);
-    $("#messages").append($("<li>").text(data.msg));
+    $("#messages").append($("<li class='message list-group-item'>").text(data.msg));
+    $("#messages").animate({scrollTop: $("#messages").prop("scrollHeight") });
+
+  });
+
+  socket.on("user join", user => {
+    $("#messages").append($("<li class='message list-group-item'>").text(user.toString() + " has joined!"));
+    //$("#online-users").append($("<li>").text(user.toString()));
   });
 
 /*
   
 
-  socket.on("user join", user => {
-    $("#chats #main").append($("<li>").text(user.toString() + " has joined!"));
-    $("#online-users").append($("<li>").text(user.toString()));
-  });
+
 
   socket.on("user left", user => {
     $("#chats #main").append($("<li>").text(user.toString() + " has left!"));

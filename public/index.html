@@ -12,22 +12,28 @@
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
-    <div class="row container-fluid nopadding">
+    <div class="row container-fluid nopadding rounded">
         <div class="col-xl-4 side-nav nopadding">
-            <div class="panel panel-default">
-                <div class="panel-heading text-center border border-dark">Chats</div>
-                <ul id="group-chat-list" class="list-group">
-                    <li><button id="create-room-btn" class="btn-primary btn-group-vertical" data-toggle="modal"
-                            data-target="#exampleModal">+ Create Room</button></li>
-                </ul>
-                <div class="panel-heading text-center border border-dark">Private Messages</div>
-                <ul id="privat-chat-list" class="list-group">
-                    <li><button id="create-msg-btn" class="btn-primary btn-group-vertical" data-toggle="modal"
-                            data-target="#exampleModal">+ Start a Private Message</button></li>
-                </ul>
+            <div class="panel panel-default group-section">
+                <div class="chat-groups rounded">
+                    <div class="panel-heading text-center border border-dark rounded">Chats</div>
+                    <button id="create-room-btn" class="btn-primary btn-group-vertical create-button rounded" data-toggle="modal"
+                        data-target="#exampleModal">+ Create Room</button>
+                    <ul id="group-chat-list" class="list-group">
+
+                    </ul>
+                </div>
+                <div class="chat-groups rounded">
+                    <div class="panel-heading text-center border border-dark rounded">Private Messages</div>
+                    <button id="create-msg-btn" class="btn-primary btn-group-vertical create-button rounded " data-toggle="modal"
+                        data-target="#exampleModal">+ Start a Private Message</button>
+                    <ul id="private-chat-list" class="list-group">
+
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="col-xl-4 chat-box nopadding">
+        <div class="col-xl-4 chat-box nopadding rounded">
             <div id="chatArea">
                 <ul id="messages" class="list-group"></ul>
             </div>
@@ -36,7 +42,7 @@
                 <button type="button" class="btn btn-info">Send</button>
             </form>
         </div>
-        <div class="col-xl-4 side-nav nopadding"></div>
+        <div class="col-xl-4 side-nav nopadding rounded"></div>
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -67,9 +73,7 @@
 
         <script src="/socket.io/socket.io.js"></script>
         <script src="/socket.js"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
+      
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
             integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
             crossorigin="anonymous"></script>
