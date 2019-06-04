@@ -15,7 +15,7 @@
   background: whitesmoke;
 }
 
-#chat-message-form {
+#chatMessageForm {
   left: 0;
   position: absolute;
   bottom: 0;
@@ -23,12 +23,12 @@
   overflow: visible;
 }
 
-#chat-message-form input {
+#chatMessageForm  input {
   display: inline-block;
   width: 87%;
 }
 
-#chat-message-form button {
+#chatMessageForm  button {
   display: inline-block;
   width: 13%;
 }
@@ -38,7 +38,7 @@
   width: 100%;
 }
 
-#messages {
+#messageList {
   font-size: 150%;
   height: 100%;
   margin: 0;
