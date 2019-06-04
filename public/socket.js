@@ -1,5 +1,5 @@
 
-var room = '<button class="btn-primary btn-group-vertical active" id="name">name</button>';
+var room = '<a class="list-group-item list-group-item-action" id="name">name</a>';
 var current = "main";
 
 $(document).ready(() => {
@@ -24,6 +24,24 @@ $(document).ready(() => {
     return false;
   });
 
+
+  $('#groupChatList').on('click', 'a', function (e) {
+    $this = $(this);
+    var val = $(this).text();
+    console.log("id",$this.attr('id'));
+    console.log("val",val);
+
+    if($this.hasClass('list-group-item-dark')) {
+      console.log('yes');
+      $this.removeClass('list-group-item-dark');
+    }
+    else {
+      console.log('no');
+      $this.addClass('list-group-item-dark');
+    }
+    return;
+  });
+
   socket.on("chat message", data => {
     $("#messageList").append($("<a class='message list-group-item'>").text(data.msg));
     $("#messageList").animate({ scrollTop: $("#messages").prop("scrollHeight") });
@@ -36,12 +54,11 @@ $(document).ready(() => {
     $("#onlineUsers").append($('<a class="message list-group-item list-group-item-action" data-toggle="list" aria-controls="' + name + '">').text(name));
   });
 
-  $('#groupChatList')
   function createRoom() {
     var room_name = $('#chatRoomName').val();
     var re = new RegExp('name', 'g');
     $('#chatRoomName').val("");
-    var temp_room = room.replace("btn-primary", "btn-light").replace(re, room_name);
+    var temp_room = room.replace(re, room_name);
     console.log(temp_room);
     $('#groupChatList').append(temp_room);
   }
@@ -63,6 +80,7 @@ $(document).ready(() => {
 
 
 });
+
 
 
 
