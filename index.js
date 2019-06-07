@@ -31,42 +31,37 @@ io.on("connection", socket => {
   socket.on("join room", room_name => {
     var found = searchRoom(socket, room_name);
     if (!found) {
-      socket.emit("join room", "You've joined: "+ room_name);
+      socket.emit("join room", "You've joined: " + room_name);
       socket.join(room_name);
-    }
-    else
-      socket.emit("join room", "You're already in this room");
-
+    } else socket.emit("join room", "You're already in this room");
   });
 
   socket.on("join rooms", rooms => {
     for (room of rooms) {
       var found = searchRoom(socket, room);
-      if (!found)
-        socket.emit("join room", "You've joined: " + room);
-      else
-        socket.emit("join room", "You're already in this room");
+      if (!found) socket.emit("join room", "You've joined: " + room);
+      else socket.emit("join room", "You're already in this room");
       socket.join(room);
     }
-  })
+  });
 
   socket.on("leave room", room_name => {
-    var found = searchRoom(socket,room_name);
+    var found = searchRoom(socket, room_name);
 
-    if(found) {
-      io.to(room_name).emit("chat message", { id: socket.id, room: room_name });
+    if (found) {
+      io.to(room_name).emit("chat messa ge", {
+        id: socket.id,
+        room: room_name
+      });
       socket.emit("leave room", "You left room: " + room_name);
-    }
-    else
-      socket.emit("leave room", "You are not in this room");
+    } else socket.emit("leave room", "You are not in this room");
   });
 
   socket.on("list room members", room_name => {
     roomMembers = [];
     for (var key of Object.keys(onlineUsers)) {
       for (room of Object.keys(onlineUsers[key].rooms)) {
-        if (room == room_name)
-          roomMembers.push(key);
+        if (room == room_name) roomMembers.push(key);
       }
     }
     socket.emit("list room members", roomMembers);
@@ -95,7 +90,6 @@ io.on("connection", socket => {
 server.listen(port, () => {
   console.log("Listening on port " + port);
 });
-
 
 function searchRoom(socket, room_name) {
   for (var room of Object.keys(onlineUsers[socket.id].rooms)) {

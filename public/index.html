@@ -14,21 +14,20 @@
 
     <div class="row container-fluid nopadding rounded">
         <!-- Left Side Panel-->
-        <div class="col side-nav nopadding">
+        <div class="col side-nav nopadding rounded">
             <div class="panel panel-default group-section">
                 <div class="chat-groups rounded">
                     <div class="panel-heading text-center border border-dark rounded">Chats</div>
-                    <button id="createRoomButton" class="btn-primary btn-group-vertical create-button rounded"
-                        data-toggle="modal" data-target="#exampleModal">+ Create Room</button>
+
                     <div class="list-group" id="groupChatList">
 
                     </div>
                 </div>
                 <div class="chat-groups rounded">
                     <div class="panel-heading text-center border border-dark rounded">Private Messages</div>
-                    <button id="createMessageButton" class="btn-primary btn-group-vertical create-button rounded "
-                        data-toggle="modal" data-target="#exampleModal">+ Start a Private Message</button>
-                    <div id="privateChatList" class="list-group">
+                    <button id="createMessageButton" class="btn-primary btn-group-vertical create-button rounded">+
+                        Start a Private Message</button>
+                    <div class="list-group" id="privateChatList">
 
                     </div>
                 </div>
@@ -46,16 +45,24 @@
         </div>
         <!-- Right Side Panel-->
         <div class="col side-nav nopadding rounded">
-            <div class="panel-heading text-center border border-dark rounded">Online Users</div>
-            <div id="friendArea">
-                <div id="onlineUsers" class="list-group" role="tablist">
+            <div class="panel panel-default group-section">
+                <div class="chat-groups rounded">
+                    <div class="panel-heading text-center border border-dark rounded">Online Users</div>
+                    <div class="list-group" id="onlineUsers" >
+                    </div>
+                </div>
+                <div class="chat-groups rounded">
+                    <div class="panel-heading text-center border border-dark rounded">ChatRooms</div>
+                    <button id="createRoomButton" class="btn-primary btn-group-vertical create-button rounded">+ Create
+                        Room</button>
+                    <div class="list-group" id="chatRoomList">
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

@@ -1,22 +1,36 @@
+var room ='<a class="list-group-item list-group-item-action list-group-room" id="name"><span class="badge badge-primary rounded list-group-item-badge">name</span><button class="btn btn-primary btn-sm rounded list-group-item-btn">Join Chat</button></a>';
+var new_user ='<a class="list-group-item list-group-item-action list-group-user" id="name"><span class="badge badge-primary rounded list-group-item-badge">name</span><button class="btn btn-primary btn-sm rounded list-group-item-btn">Message</button></a>';
 
-var room = '<a class="list-group-item list-group-item-action" id="name">name</a>';
 var current = "main";
 
 $(document).ready(() => {
   console.log("Ready");
   var socket = io();
 
-  $("#createRoomSubmit").on("click", () => {
-    createRoom();
+  $("*").on("mouseover", ".list-group-item", function() {
+    $this = $(this);
+    $this.addClass("list-group-item-dark");
+    $this.css("cursor", "pointer");
   });
+
+  $("*").on("mouseleave", ".list-group-item", function() {
+    $this = $(this);
+    $this.removeClass("list-group-item-dark");
+    $this.css("cursor", "arrow");
+  });
+
+  $("#createRoomButton").on("click", function() {
+    $("#exampleModal").modal("show");
+  });
+
+  $("#createRoomSubmit").on("click", createRoom());
 
   $("#chatRoomName").keypress(e => {
     var key_code = e.keyCode ? e.keyCode : e.which;
     if (key_code == "13") createRoom();
   });
 
-
-  $('#chat-message-form').submit(function (e) {
+  $("#chat-message-form").submit(function(e) {
     e.preventDefault();
     var message = $("#chatMessageInput").val();
     $("#chatMessageInput").val("");
@@ -24,43 +38,42 @@ $(document).ready(() => {
     return false;
   });
 
-
-  $('#groupChatList').on('click', 'a', function (e) {
+  $("#chatRoomList").on("click", "a", function(e) {
     $this = $(this);
-    var val = $(this).text();
-    console.log("id",$this.attr('id'));
-    console.log("val",val);
 
-    if($this.hasClass('list-group-item-dark')) {
-      console.log('yes');
-      $this.removeClass('list-group-item-dark');
+    if ($this.hasClass("list-group-item-dark")) {
+      $this.removeClass("list-group-item-dark");
+    } else {
+      $this.addClass("list-group-item-dark");
     }
-    else {
-      console.log('no');
-      $this.addClass('list-group-item-dark');
-    }
-    return;
   });
 
   socket.on("chat message", data => {
-    $("#messageList").append($("<a class='message list-group-item'>").text(data.msg));
-    $("#messageList").animate({ scrollTop: $("#messages").prop("scrollHeight") });
-
+    $("#messageList").append(
+      $("<a class='message list-group-item'>").text(data.msg)
+    );
+    $("#messageList").animate({
+      scrollTop: $("#messages").prop("scrollHeight")
+    });
   });
 
   socket.on("user join", user => {
-    name = user.toString();
-    $("#messageList").append($("<a class='message list-group-item'>").text(name + " has joined!"));
-    $("#onlineUsers").append($('<a class="message list-group-item list-group-item-action" data-toggle="list" aria-controls="' + name + '">').text(name));
+    var name = user.toString();
+    var re = new RegExp("name", "g");
+    $("#messageList").append(
+      $("<a class='message list-group-item'>").text(name + " has joined!")
+    );
+    var temp_name = new_user.replace(re, name);
+
+    $("#onlineUsers").append(temp_name);
   });
 
   function createRoom() {
-    var room_name = $('#chatRoomName').val();
-    var re = new RegExp('name', 'g');
-    $('#chatRoomName').val("");
+    var room_name = $("#chatRoomName").val();
+    var re = new RegExp("name", "g");
+    $("#chatRoomName").val("");
     var temp_room = room.replace(re, room_name);
-    console.log(temp_room);
-    $('#groupChatList').append(temp_room);
+    $("#chatRoomList").append(temp_room);
   }
 
   /*
@@ -77,13 +90,7 @@ $(document).ready(() => {
       socket.emit("switch rooms", { old: older, newer: newer });
     }
     */
-
-
 });
-
-
-
-
 
 /*
 

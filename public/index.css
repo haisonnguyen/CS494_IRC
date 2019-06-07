@@ -23,12 +23,12 @@
   overflow: visible;
 }
 
-#chatMessageForm  input {
+#chatMessageForm input {
   display: inline-block;
   width: 87%;
 }
 
-#chatMessageForm  button {
+#chatMessageForm button {
   display: inline-block;
   width: 13%;
 }
@@ -42,17 +42,16 @@
   font-size: 150%;
   height: 100%;
   margin: 0;
-
   padding: 10px 20px 10px 20px;
 }
 
 #chatArea {
-    height: 100%;
-    padding-bottom: 60px;
-  }
+  height: 100%;
+  padding-bottom: 60px;
+}
 
 .group-section {
-  height:100%;
+  height: 100%;
 }
 
 .chat-groups {
@@ -62,20 +61,33 @@
   margin: 0;
 }
 
-.list-group{
+.list-group {
   width: 100%;
   overflow-y: scroll;
-  height:100%;
+  height: 100%;
+}
+
+.list-group-item-badge {
+  top: 0;
+  left: 0;
+}
+
+.list-group-item-btn {
+  vertical-align: middle;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .create-button {
-  width:100%;
+  width: 100%;
 }
 
 ::-webkit-scrollbar {
   display: none;
-  }
+}
 
-  .message {
-    width: 100%;
-  }
+.message {
+  width: 100%;
+}
