@@ -17,11 +17,8 @@
         <div class="col side-nav nopadding rounded">
             <div class="panel panel-default group-section">
                 <div class="chat-groups rounded">
-                    <div class="panel-heading text-center border border-dark rounded">Chats</div>
-
-                    <div class="list-group" id="groupChatList">
-
-                    </div>
+                    <div class="panel-heading text-center border border-dark rounded">Active Chats</div>
+                    <div class="list-group" id="groupChatList"></div>
                 </div>
                 <div class="chat-groups rounded">
                     <div class="panel-heading text-center border border-dark rounded">Private Messages</div>
@@ -39,8 +36,9 @@
                 <div class="list-group" id="messageList"></div>
             </div>
             <form id="chatMessageForm" class="form-row nopadding">
-                <input type="text" id="chatMessageInput" class="form-control" placeholder="Enter text here">
-                <button type="button" class="btn btn-info">Send</button>
+                <input type="text" id="chatMessageInput" class="form-control" placeholder="Enter text here"
+                    autocomplete="off">
+                <button type="button" class="btn btn-info" id="sendMessageButton">Send</button>
             </form>
         </div>
         <!-- Right Side Panel-->
@@ -48,7 +46,7 @@
             <div class="panel panel-default group-section">
                 <div class="chat-groups rounded">
                     <div class="panel-heading text-center border border-dark rounded">Online Users</div>
-                    <div class="list-group" id="onlineUsers" >
+                    <div class="list-group" id="onlineUsers">
                     </div>
                 </div>
                 <div class="chat-groups rounded">
@@ -62,11 +60,11 @@
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal fade" id="createRoomModal" tabindex="-1" role="dialog" aria-labelledby="createRoomModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Create a Room</h5>
+                        <h5 class="modal-title" id="createRoomModalLabel">Create a Room</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

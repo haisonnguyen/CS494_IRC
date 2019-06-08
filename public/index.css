@@ -89,5 +89,7 @@
 }
 
 .message {
+
+  display: ineline-block;
   width: 100%;
 }

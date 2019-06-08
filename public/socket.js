@@ -1,46 +1,73 @@
-var room ='<a class="list-group-item list-group-item-action list-group-room" id="name"><span class="badge badge-primary rounded list-group-item-badge">name</span><button class="btn btn-primary btn-sm rounded list-group-item-btn">Join Chat</button></a>';
-var new_user ='<a class="list-group-item list-group-item-action list-group-user" id="name"><span class="badge badge-primary rounded list-group-item-badge">name</span><button class="btn btn-primary btn-sm rounded list-group-item-btn">Message</button></a>';
 
-var current = "main";
+let current = "main";
 
 $(document).ready(() => {
-  console.log("Ready");
-  var socket = io();
 
-  $("*").on("mouseover", ".list-group-item", function() {
+
+  // Establish a client connection
+  let socket = io();
+  console.log("Ready");
+
+  /**
+   * Jquery
+   * 
+   * Below we cache results for performance
+   */
+
+  let $onlineUsers = $("#onlineUsers");
+  let $messageList = $("#messageList");
+  let $chatRoomName = $('#chatRoomName');
+  let $chatRoomList = $("#chatRoomList");
+  let $chatMessageInput = $("#chatMessageInput");
+  let $chatMessageForm = $("#chatMessageForm");
+  let $sendMessageButton = $('#sendMessageButton');
+  let $createRoomButton = $("#createRoomButton");
+  let $createRoomModal = $("#createRoomModal");
+  let $groupChatList = $('#groupChatList');
+
+  /**
+   * Jquery handling events
+   */
+  $("*").on("mouseover", ".list-group-item", function () {
     $this = $(this);
     $this.addClass("list-group-item-dark");
     $this.css("cursor", "pointer");
   });
 
-  $("*").on("mouseleave", ".list-group-item", function() {
+  $("*").on("mouseleave", ".list-group-item", function () {
     $this = $(this);
     $this.removeClass("list-group-item-dark");
     $this.css("cursor", "arrow");
   });
 
-  $("#createRoomButton").on("click", function() {
-    $("#exampleModal").modal("show");
+  $createRoomButton.on("click", function () {
+    $createRoomModal.modal("show");
   });
 
-  $("#createRoomSubmit").on("click", createRoom());
+  $("#createRoomSubmit").on("click", () => {
+    createRoom();
+  });
 
   $("#chatRoomName").keypress(e => {
-    var key_code = e.keyCode ? e.keyCode : e.which;
-    if (key_code == "13") createRoom();
+    let key_code = e.keyCode ? e.keyCode : e.which;
+    if (key_code == "13") {
+      createRoom();
+      $createRoomModal.modal("hide");
+    }
+
   });
 
-  $("#chat-message-form").submit(function(e) {
+  $chatMessageForm.on('submit', function (e) {
     e.preventDefault();
-    var message = $("#chatMessageInput").val();
-    $("#chatMessageInput").val("");
-    socket.emit("chat message", { room: current, msg: message });
-    return false;
+    sendMessage();
   });
 
-  $("#chatRoomList").on("click", "a", function(e) {
-    $this = $(this);
+  $sendMessageButton.on('click', function () {
+    sendMessage();
+  });
 
+  $chatRoomList.on("click", "a", function (e) {
+    $this = $(this);
     if ($this.hasClass("list-group-item-dark")) {
       $this.removeClass("list-group-item-dark");
     } else {
@@ -48,58 +75,94 @@ $(document).ready(() => {
     }
   });
 
-  socket.on("chat message", data => {
-    $("#messageList").append(
-      $("<a class='message list-group-item'>").text(data.msg)
+  $chatRoomList.on("click", " a button", function () {
+    console.log("click");
+    switchRooms(this);
+  });
+
+
+
+  /**
+   * Socket 
+   */
+  socket.on("user join", user => {
+    let name = user.toString();
+    $messageList.append(
+      $("<a>").addClass('message list-group-item').text(name + " has joined!")
     );
-    $("#messageList").animate({
-      scrollTop: $("#messages").prop("scrollHeight")
+  });
+
+  socket.on("joined main", user => {
+    let room = $('<a>').addClass('list-group-item list-group-item-action list-group-room').attr('id', user)
+    room.text(user);
+    $onlineUsers.append(room);
+  });
+
+  socket.on("chat message", data => {
+    $messageList.append(
+      $("<a>").addClass('message list-group-item').text(data.msg)
+    );
+    $messageList.animate({
+      scrollTop: $messageList.prop("scrollHeight")
     });
   });
 
-  socket.on("user join", user => {
-    var name = user.toString();
-    var re = new RegExp("name", "g");
-    $("#messageList").append(
-      $("<a class='message list-group-item'>").text(name + " has joined!")
-    );
-    var temp_name = new_user.replace(re, name);
+  socket.on("joined room", function (room_name) {
+    let room = $('<a>').addClass('list-group-item list-group-item-action list-group-room').attr('id', room_name + '-btn');
+    $groupChatList.append(room);
 
-    $("#onlineUsers").append(temp_name);
   });
+
+  socket.on("left room", function (room_name) {
+    $('#' + room_name + '-btn').remove();
+
+  });
+
+  socket.on("err", err => console.log(err));
 
   function createRoom() {
-    var room_name = $("#chatRoomName").val();
-    var re = new RegExp("name", "g");
-    $("#chatRoomName").val("");
-    var temp_room = room.replace(re, room_name);
-    $("#chatRoomList").append(temp_room);
+    let room_name = $chatRoomName.val();
+    $chatRoomName.val("");
+    let room = $('<a>').addClass('list-group-item list-group-item-action list-group-room').attr('id', room_name);
+    let badge = $('<span>').addClass('badge badge-primary rounded list-group-item-badge').text(room_name);
+    let btn = $('<button>').addClass('btn btn-primary btn-sm rounded list-group-item-btn').text("Join Chat");
+    room.append(badge);
+    room.append(btn);
+    $chatRoomList.append(room);
   }
 
-  /*
-    
-  
-  
-  
-    socket.on("user left", user => {
-      $("#chats #main").append($("<li>").text(user.toString() + " has left!"));
-    });
-    
-  
-    function switchRooms(older, newer) {
-      socket.emit("switch rooms", { old: older, newer: newer });
+  function switchRooms(btn) {
+    let $btn = $(btn);
+    let state = $btn.text();
+    let room = $btn.parent().attr('id');
+
+    // Leave Room
+    if (state == 'Join Chat') {
+      joinRoom(room);
     }
-    */
+    // Join Room
+    else {
+      leaveRoom(room);
+
+    }
+  }
+
+  function joinRoom(room_name) {
+    $('#' + room_name + ' > button').text("Leave Chat");
+    socket.emit("join room", room_name);
+  }
+
+  function leaveRoom(room_name) {
+    $('#' + room_name + ' > button').text("Join Chat");
+    socket.emit("leave room", room_name);
+  }
+
+  function sendMessage() {
+    let message = $chatMessageInput.val();
+    if (message) {
+      $chatMessageInput.val("");
+      socket.emit("chat message", { room: current, msg: message });
+    }
+  }
+
 });
-
-/*
-
-
-$(document).ready(() => {
-  // Start
-
-
-
-});
-
-*/

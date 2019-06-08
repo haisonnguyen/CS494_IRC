@@ -15,7 +15,7 @@ io.on("connection", socket => {
   ++numUsers;
   onlineUsers[socket.id] = socket;
   socket.join(main, () => {
-    socket.emit("joined room", main);
+    socket.emit("joined main", socket.id);
   });
 
   io.emit("user join", socket.id);
@@ -31,17 +31,21 @@ io.on("connection", socket => {
   socket.on("join room", room_name => {
     var found = searchRoom(socket, room_name);
     if (!found) {
-      socket.emit("join room", "You've joined: " + room_name);
+      
+      socket.emit("joined room", room_name);
       socket.join(room_name);
-    } else socket.emit("join room", "You're already in this room");
+    } 
+    else socket.emit("err", "You're already in this room");
   });
 
   socket.on("join rooms", rooms => {
     for (room of rooms) {
       var found = searchRoom(socket, room);
-      if (!found) socket.emit("join room", "You've joined: " + room);
-      else socket.emit("join room", "You're already in this room");
-      socket.join(room);
+      if (!found){
+        socket.emit("joined room", room);
+        socket.join(room);
+      }
+      else socket.emit("err", "You're already in this room");
     }
   });
 
@@ -49,12 +53,14 @@ io.on("connection", socket => {
     var found = searchRoom(socket, room_name);
 
     if (found) {
-      io.to(room_name).emit("chat messa ge", {
+      /*
+      io.to(room_name).emit("chat message", {
         id: socket.id,
         room: room_name
       });
-      socket.emit("leave room", "You left room: " + room_name);
-    } else socket.emit("leave room", "You are not in this room");
+      */
+      socket.emit("leave room", room_name);
+    } else socket.emit("err", "You are not in this room");
   });
 
   socket.on("list room members", room_name => {
@@ -94,6 +100,7 @@ server.listen(port, () => {
 function searchRoom(socket, room_name) {
   for (var room of Object.keys(onlineUsers[socket.id].rooms)) {
     if (room == room_name) {
+      console.log("found",room,room_name);
       return true;
     }
   }
