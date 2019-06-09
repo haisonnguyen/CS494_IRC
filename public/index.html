@@ -18,7 +18,8 @@
             <div class="panel panel-default group-section">
                 <div class="chat-groups rounded">
                     <div class="panel-heading text-center border border-dark rounded">Active Chats</div>
-                    <div class="list-group" id="groupChatList"></div>
+                    <div class="list-group" id="groupChatList">
+                    </div>
                 </div>
                 <div class="chat-groups rounded">
                     <div class="panel-heading text-center border border-dark rounded">Private Messages</div>
@@ -32,8 +33,8 @@
         </div>
         <!--Middle Chat Box-->
         <div class="col chat-box nopadding rounded">
-            <div id="chatArea">
-                <div class="list-group" id="messageList"></div>
+            <div id="chatBoxList">
+                <div class="list-group" id="mainMessages"></div>
             </div>
             <form id="chatMessageForm" class="form-row nopadding">
                 <input type="text" id="chatMessageInput" class="form-control" placeholder="Enter text here"
@@ -44,10 +45,9 @@
         <!-- Right Side Panel-->
         <div class="col side-nav nopadding rounded">
             <div class="panel panel-default group-section">
-                <div class="chat-groups rounded">
+                <div class="chat-groups rounded" id="onlineList">
                     <div class="panel-heading text-center border border-dark rounded">Online Users</div>
-                    <div class="list-group" id="onlineUsers">
-                    </div>
+                    <div class="list-group" id="mainOnline"></div>
                 </div>
                 <div class="chat-groups rounded">
                     <div class="panel-heading text-center border border-dark rounded">ChatRooms</div>

@@ -38,16 +38,21 @@
   width: 100%;
 }
 
-#messageList {
+#mainMessage {
   font-size: 150%;
   height: 100%;
   margin: 0;
   padding: 10px 20px 10px 20px;
 }
 
-#chatArea {
+#chatBoxList{
+  position: relative;
   height: 100%;
   padding-bottom: 60px;
+}
+
+#chatBoxList > .list-group{
+  position: absolute;
 }
 
 .group-section {
@@ -89,7 +94,15 @@
 }
 
 .message {
-
+  resize: vertical;
   display: ineline-block;
+  width: 100%;
+}
+
+#sendMessageButton {
+  resize: vertical;
+  display: ineline-block;
+  height:100%;
+
   width: 100%;
 }

@@ -14,11 +14,6 @@ const main = "main";
 io.on("connection", socket => {
   ++numUsers;
   onlineUsers[socket.id] = socket;
-  socket.join(main, () => {
-    socket.emit("joined main", socket.id);
-  });
-
-  io.emit("user join", socket.id);
 
   socket.on("list rooms", () => {
     var rooms = [];
@@ -31,35 +26,21 @@ io.on("connection", socket => {
   socket.on("join room", room_name => {
     var found = searchRoom(socket, room_name);
     if (!found) {
-      
-      socket.emit("joined room", room_name);
       socket.join(room_name);
+
+      let message = socket.id+" has joined!";
+      io.in(room_name).emit("user joined", {socketId:socket.id, room_name:room_name});
+      socket.emit("joined room", {socketId: socket.id, room_name:room_name});
     } 
     else socket.emit("err", "You're already in this room");
-  });
-
-  socket.on("join rooms", rooms => {
-    for (room of rooms) {
-      var found = searchRoom(socket, room);
-      if (!found){
-        socket.emit("joined room", room);
-        socket.join(room);
-      }
-      else socket.emit("err", "You're already in this room");
-    }
   });
 
   socket.on("leave room", room_name => {
     var found = searchRoom(socket, room_name);
 
     if (found) {
-      /*
-      io.to(room_name).emit("chat message", {
-        id: socket.id,
-        room: room_name
-      });
-      */
-      socket.emit("leave room", room_name);
+      socket.emit("left room", {socketId: socket.id, room_name: room_name});
+      socket.leave(room_name);
     } else socket.emit("err", "You are not in this room");
   });
 
@@ -73,15 +54,14 @@ io.on("connection", socket => {
     socket.emit("list room members", roomMembers);
   });
 
-  socket.on("chat message", data => {
-    io.to(data.room).emit("chat message", data);
+  socket.on("create room", room_name => {
+    io.emit("created room", room_name);
   });
 
-  socket.on("chat message multiple", data => {
-    for (room of data.rooms) {
-      io.to(room).emit("chat message", data.msg);
-    }
+  socket.on("chat message", data => {
+    io.in(data.room_name).emit("chat message", data);
   });
+
 
   socket.on("private chat message", data => {
     io.sockets.socket(data.reciever).emit("private chat message", data.msg);
@@ -100,7 +80,6 @@ server.listen(port, () => {
 function searchRoom(socket, room_name) {
   for (var room of Object.keys(onlineUsers[socket.id].rooms)) {
     if (room == room_name) {
-      console.log("found",room,room_name);
       return true;
     }
   }
