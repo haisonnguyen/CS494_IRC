@@ -2,9 +2,7 @@ let current = "main";
 
 $(document).ready(() => {
   // Establish a client connection
-  let socket = io();
-  socket.emit("join room", current);
-  $("#mainMessages").show();
+  let socket = io.connect('//localhost:8080',{'forceNew':true });
   console.log("Ready");
 
   /**
@@ -13,8 +11,6 @@ $(document).ready(() => {
    * Below we cache results for performance
    */
 
-  let $onlineUsers = $("#onlineUsers");
-  let $messageList = $("#messageList");
   let $chatRoomName = $("#chatRoomName");
   let $chatRoomList = $("#chatRoomList");
   let $chatMessageInput = $("#chatMessageInput");
@@ -27,73 +23,47 @@ $(document).ready(() => {
    * Jquery handling events
    */
 
-  $groupChatList.on("click", "a", function() {
-    console.log("fire");
-    let room_name = $(this).text();
-    console.log(room_name);
-    if (room_name == current) {
-      console.log("current", current);
-      // no op
-    } else {
-      console.log("not current", current);
-      $("#" + current + "Online").hide();
-      $("#" + current + "Messages").hide();
-      $("#" + room_name + "Online").show();
-      $("#" + room_name + "Messages").show();
-      current = room_name;
-    }
-  });
-  $("*").on("mouseover", ".list-group-item", function() {
-    $this = $(this);
-    $this.addClass("list-group-item-dark");
-    $this.css("cursor", "pointer");
+  $groupChatList.on("click", "a", function () {
+    switchChatWindows(this);
   });
 
-  $("*").on("mouseleave", ".list-group-item", function() {
-    $this = $(this);
-    $this.removeClass("list-group-item-dark");
-    $this.css("cursor", "arrow");
-  });
-
-  $createRoomButton.on("click", function() {
+  function switchChatWindows(room) {
+    current = $(room).text();
+    $('#' + current + 'Messages').siblings().hide();
+    $('#' + current + 'Online').siblings().hide();
+    $('#' + current + 'Messages').show();
+    $('#' + current + 'Online').show();
+  }
+  $createRoomButton.on("click", function () {
     $createRoomModal.modal("show");
   });
 
   $("#createRoomSubmit").on("click", () => {
-    let room_name = $chatRoomName.val();
+    let roomName = $chatRoomName.val();
     $chatRoomName.val("");
-    socket.emit("create room", room_name);
+    socket.emit("create room", roomName);
   });
 
   $("#chatRoomName").keypress(e => {
     let key_code = e.keyCode ? e.keyCode : e.which;
     if (key_code == "13") {
-      let room_name = $chatRoomName.val();
+      let roomName = $chatRoomName.val();
       $chatRoomName.val("");
-      socket.emit("create room", room_name);
+      socket.emit("create room", roomName);
       $createRoomModal.modal("hide");
     }
   });
 
-  $chatMessageForm.on("submit", function(e) {
+  $chatMessageForm.on("submit", function (e) {
     e.preventDefault();
     sendMessage();
   });
 
-  $sendMessageButton.on("click", function() {
+  $sendMessageButton.on("click", function () {
     sendMessage();
   });
 
-  $chatRoomList.on("click", "a", function(e) {
-    $this = $(this);
-    if ($this.hasClass("list-group-item-dark")) {
-      $this.removeClass("list-group-item-dark");
-    } else {
-      $this.addClass("list-group-item-dark");
-    }
-  });
-
-  $chatRoomList.on("click", " a button", function() {
+  $chatRoomList.on("click", "a > button", function () {
     switchRooms(this);
   });
 
@@ -101,15 +71,16 @@ $(document).ready(() => {
    * Socket
    */
 
-  socket.on("chat message", data => {
+  socket.on("chat message", function (data) {
     updateMessages(data);
   });
 
-  socket.on("user joined", function(data) {
+  socket.on("user joined", function (data) {
+
     let user = data.socketId;
-    let room_name = data.room_name;
-    console.log(user, room_name);
-    $("#" + room_name + "Messages").append(
+    let roomName = data.roomName;
+    socket.emit("list room members", roomName);
+    $("#" + roomName + "Messages").append(
       $("<a>")
         .addClass("message list-group-item")
         .text(user + " has joined!")
@@ -117,120 +88,144 @@ $(document).ready(() => {
 
     let tag = $("<a>")
       .addClass("list-group-item list-group-item-action")
-      .attr("id", user + "-btn")
+      .attr("id", user + "OnlineBtn")
       .text(user);
 
-      $("#" + room_name + "Online").append(tag);
+    $("#" + roomName + "Online").append(tag);
   });
 
-  socket.on("joined room", function(data) {
+  socket.on("user left", function (data) {
     let user = data.socketId;
-    let room_name = data.room_name;
-    console.log(user, room_name);
-
-    let room = $("<a>")
-      .addClass("list-group-item list-group-item-action list-group-room")
-      .attr("id", room_name + "Btn")
-      .text(room_name);
-      $groupChatList.append(room);
-
-  });
-
-  socket.on("left room", function(data) {
-    console.log(data.room_name);
-    $("#" + data.room_name + "Messages").append(
+    let roomName = data.roomName;
+    socket.emit("list room members", roomName);
+    $("#" + roomName + "Messages").append(
       $("<a>")
         .addClass("message list-group-item")
-        .text(data.socketId + " has left the room")
+        .text(user + " has left!")
     );
-    $("#" + data.room_name + "Btn").remove();
+
+  })
+
+  socket.on("joined room", function (data) {
+    joinRoom(data.roomName);
   });
 
-  socket.on("created room", function(room_name) {
-    console.log("creating room");
-    createRoom(room_name);
+  socket.on("left room", function (data) {
+    leaveRoom(data.roomName);
+  });
+
+  socket.on("created room", function (roomName) {
+    createRoom(roomName);
+  });
+
+  socket.on("list room members", function (data) {
+    updateOnlineUsers(data);
   });
 
   socket.on("err", err => console.log(err));
 
-  function createRoom(room_name) {
-    let listGroup = $("<div>").addClass("list-group");
+
+  function createRoom(roomName) {
+
+    let $listGroup = $("<div>").addClass("list-group");
     /**
-     * Create the badge for chatRoomList
+     * Create the room's button for active chats
      */
     let room = $("<a>")
       .addClass("list-group-item list-group-item-action list-group-room")
-      .attr("id", room_name);
+      .attr("id", roomName);
     let badge = $("<span>")
       .addClass("badge badge-primary rounded list-group-item-badge")
-      .text(room_name);
+      .text(roomName);
     let btn = $("<button>")
       .addClass("btn btn-primary btn-sm rounded list-group-item-btn")
-      .text("Join Chat");
+      .text("Join Room");
     room.append(badge);
     room.append(btn);
     $chatRoomList.append(room);
-
-    $("#onlineList").append(listGroup.attr("id", room_name + "Online"));
 
     /**
      * Create container for messages for specific room
      */
     $("#chatBoxList").append(
-      listGroup.clone().attr("id", room_name + "Messages")
+      $listGroup.clone().attr("id", roomName + "Messages")
     );
     /**
      * Create container for online users for specific room
      */
+    $("#onlineList").append($listGroup.attr("id", roomName + "Online"));
+  }
+
+  function joinRoom(roomName) {
+    socket.emit("list room members", roomName);
+    $("#" + roomName + " > button").text("Leave Chat");
+    let list_room = $("<a>")
+      .addClass("list-group-item list-group-item-action list-group-room")
+      .attr("id", roomName + "Btn")
+      .text(roomName);
+    $groupChatList.append(list_room);
+  }
+
+  function leaveRoom(roomName) {
+    $("#" + roomName + " > button").text("Join Room");
+    $('#' + roomName + 'Btn').remove();
+    $('#' + roomName + 'Messages').hide();
+    $('#' + roomName + 'Online').hide();
   }
 
   function switchRooms(btn) {
     let $btn = $(btn);
-    let room = $btn.parent().attr("id");
+    let roomName = $btn.parent().attr("id");
     let state = $btn.text();
 
-    // Leave Room
-    if (state == "Join Chat") {
-      joinRoom(room);
+    // Leave Room 
+    if (state == "Join Room") {
+      socket.emit("join room", roomName);
     }
     // Join Room
     else {
-      leaveRoom(room);
+      socket.emit("leave room", roomName);
     }
-  }
-
-  function joinRoom(room_name) {
-    $("#" + room_name + " > button").text("Leave Chat");
-    socket.emit("join room", room_name);
-  }
-
-  function leaveRoom(room_name) {
-    $("#" + room_name + " > button").text("Join Chat");
-    $("#" + room_name + "Btn").remove();
-    $("#" + room_name + "Online").remove();
-    $("#" + room_name + "Messages").remove();
-    socket.emit("leave room", room_name);
   }
 
   function sendMessage() {
     let message = $chatMessageInput.val();
     if (message) {
       $chatMessageInput.val("");
-      socket.emit("chat message", { room_name: current, msg: message });
+      socket.emit("chat message", { roomName: current, msg: message });
     }
   }
 
   function updateMessages(data) {
-    console.log("message fired");
-    let room_name = data.room_name;
+    let roomName = data.roomName;
     let msg = data.msg;
-    $("#" + room_name + "Messages").append(
+    $("#" + roomName + "Messages").append(
       $("<a>")
         .addClass("message list-group-item")
-        .text(data.msg)
+        .text(msg)
     );
-    $("#" + room_name + "Messages").animate({
-      scrollTop: $("#" + room_name + "Messages").prop("scrollHeight")
+    $("#" + roomName + "Messages").animate({
+      scrollTop: $("#" + roomName + "Messages").prop("scrollHeight")
     });
   }
+
+  function updateOnlineUsers(data) {
+    $roomList = $('#' + data.roomName + 'Online');
+    $roomList.empty();
+
+    for (member of data.roomMembers) {
+      let tag = $("<a>")
+        .addClass("list-group-item list-group-item-action")
+        .attr("id", member + "OnlineBtn")
+        .text(member);
+      $roomList.append(tag)
+    }
+  }
+
+  function updateRoomList() {
+
+  }
+
+  
+
 });

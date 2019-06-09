@@ -6,60 +6,58 @@ const io = require("socket.io")(server);
 const port = process.env.PORT || 8080;
 
 var onlineUsers = {};
-var numUsers = 0;
+var rooms = {};
 
 app.use(express.static(__dirname + "/public"));
 const main = "main";
 
 io.on("connection", socket => {
-  ++numUsers;
   onlineUsers[socket.id] = socket;
+  socket.join(main, () => console.log(socket.rooms));
+  io.in(main).emit("user joined", { socketId: socket.id, roomName: main });
 
-  socket.on("list rooms", () => {
-    var rooms = [];
-    for (var k of Object.keys(socket.rooms)) {
-      rooms.push(socket.rooms[k]);
-    }
-    socket.emit("list rooms", { rooms: rooms });
-  });
-
-  socket.on("join room", room_name => {
-    var found = searchRoom(socket, room_name);
+  socket.on("join room", roomName => {
+    var found = searchRoom(socket, roomName);
     if (!found) {
-      socket.join(room_name);
-
-      let message = socket.id+" has joined!";
-      io.in(room_name).emit("user joined", {socketId:socket.id, room_name:room_name});
-      socket.emit("joined room", {socketId: socket.id, room_name:room_name});
-    } 
+      socket.join(roomName);
+      io.in(roomName).emit("user joined", { socketId: socket.id, roomName: roomName });
+      socket.emit("joined room", { socketId: socket.id, roomName: roomName });
+    }
     else socket.emit("err", "You're already in this room");
   });
 
-  socket.on("leave room", room_name => {
-    var found = searchRoom(socket, room_name);
-
+  socket.on("leave room", roomName => {
+    var found = searchRoom(socket, roomName)
     if (found) {
-      socket.emit("left room", {socketId: socket.id, room_name: room_name});
-      socket.leave(room_name);
-    } else socket.emit("err", "You are not in this room");
+      socket.leave(roomName);
+      socket.emit("left room", { socketId: socket.id, roomName: roomName });
+      io.in(roomName).emit("user left", { socketId: socket.id, roomName: roomName });
+    }
+    else socket.emit("err", "You are not in this room");
   });
 
-  socket.on("list room members", room_name => {
+  socket.on("list room members", roomName => {
     roomMembers = [];
     for (var key of Object.keys(onlineUsers)) {
       for (room of Object.keys(onlineUsers[key].rooms)) {
-        if (room == room_name) roomMembers.push(key);
+        if (room == roomName) roomMembers.push(key);
       }
     }
-    socket.emit("list room members", roomMembers);
+    socket.emit("list room members", { roomName: roomName, roomMembers: roomMembers });
   });
 
-  socket.on("create room", room_name => {
-    io.emit("created room", room_name);
+  socket.on("create room", roomName => {
+    io.emit("created room", roomName);
   });
 
   socket.on("chat message", data => {
-    io.in(data.room_name).emit("chat message", data);
+    if (data.msg.startsWith("/")) {
+      specialCommands(socket, data);
+    }
+    else {
+      io.in(data.roomName).emit("chat message", data);
+
+    }
   });
 
 
@@ -68,20 +66,57 @@ io.on("connection", socket => {
   });
 
   socket.on("disconnect", () => {
-    io.emit("user left", socket.id);
     socket.disconnect();
   });
+
+  socket.on("disconnecting", () => {
+    for (room of Object.keys(onlineUsers[socket.id].rooms)) {
+      socket.to(room).emit("user left", { socketId: socket.id, roomName: room });
+    }
+  });
+
 });
+
+io
 
 server.listen(port, () => {
   console.log("Listening on port " + port);
 });
 
-function searchRoom(socket, room_name) {
+function searchRoom(socket, roomName) {
   for (var room of Object.keys(onlineUsers[socket.id].rooms)) {
-    if (room == room_name) {
+    if (room == roomName) {
       return true;
     }
   }
   return false;
+}
+
+function specialCommands(socket, data) {
+  let msg = data.msg;
+  let socketId = data.socketId;
+  let temp = "";
+  temp = msg.slice(6);
+
+  if (msg.startsWith("/send")) {
+    let n = temp.indexOf(' ');
+    data.msg = temp.slice(n);
+    let rooms = temp.slice(0, n).split(',');
+    for (room of rooms) {
+      io.in(room).emit("chat message", { roomName: room, msg: data.msg });
+    }
+    console.log(rooms);
+
+  }
+  else if (msg.startsWith("/join")) {
+    let rooms = temp.split(',');
+    for (room of rooms) {
+      let found = searchRoom(socket, room);
+      if (!found) {
+        socket.join(room);
+        socket.emit("joined room", { socketId: data.socketId, roomName: room })
+        io.in(room).emit("user joined", { socketId: socket.id, roomName: room });
+      }
+    }
+  }
 }
