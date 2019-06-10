@@ -1,12 +1,28 @@
 {
-    "name": "CS494-IRC",
-    "version": "0.0.1",
-    "description": "IRC application for CS494 Internetworking Protocols",
-    "dependencies": {
-        "express": "^4.16.4",
-        "http": "0.0.0",
-        "mongoose": "^5.5.9",
-        "path": "^0.12.7",
-        "socket.io": "^2.2.0"
-    }
+  "name": "CS494-IRC",
+  "version": "0.0.1",
+  "description": "IRC application for CS494 Internetworking Protocols",
+  "dependencies": {
+    "express": "^4.16.4",
+    "http": "0.0.0",
+    "mongoose": "^5.5.9",
+    "path": "^0.12.7",
+    "socket.io": "^2.2.0"
+  },
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haisonnguyen/CS494_IRC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haisonnguyen/CS494_IRC/issues"
+  },
+  "homepage": "https://github.com/haisonnguyen/CS494_IRC#readme"
 }

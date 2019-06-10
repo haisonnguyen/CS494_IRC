@@ -2,7 +2,7 @@ let current = "main";
 
 $(document).ready(() => {
   // Establish a client connection
-  let socket = io.connect("//localhost:8080", { forceNew: true });
+  let socket = io.connect();
   console.log("Ready");
 
   /**
